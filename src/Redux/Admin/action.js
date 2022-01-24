@@ -16,3 +16,18 @@ export const setledDetails = (id) => ({
         id: id
     }
 });
+export const getDetail = (details)=>{
+    return {
+        type: "GET_DETAIL",
+        payload: {
+            details: details
+        }
+    };
+};
+
+export const filtereDateWise = (details)=>{
+    return {
+        type: "FILTRE_DATE_WISE",
+        details
+    }
+}

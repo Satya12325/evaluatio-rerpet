@@ -1,10 +1,7 @@
 import { useEffect } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import {
-    addDetails,
-    getDetails
-} from "../Redux/Employ/action";
+
 import * as React from 'react';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
@@ -18,7 +15,12 @@ import axios from "axios";
 import { useState } from "react";
 import { Box } from "@mui/system";
 import ModalUnstyled from "@mui/base/ModalUnstyled";
-
+import {setledDetails,
+    removeDetails,
+    toggleDetails,
+    getDetail,
+    filtereDateWise} 
+    from "../Redux/Admin/action"
 
 
 
@@ -73,23 +75,64 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
     },
   }));
 
-
+function Tableer({name,id,date,purpose,amount,status,onDelete,ontoggle,onstalled}){
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+          
+  
+  return (
+          <>
+         
+            <TableBody>
+            
+                 <StyledTableRow key={id} onClick={handleOpen}>
+                    <StyledTableCell component="th" scope="row" >
+                    {name}
+                    </StyledTableCell>
+                    <StyledTableCell align="right">{date}</StyledTableCell>
+                    <StyledTableCell align="right">{purpose}</StyledTableCell>
+                    <StyledTableCell align="right">{amount}</StyledTableCell>
+                    <StyledTableCell align="right">{`${status}`}</StyledTableCell>
+                    
+                  </StyledTableRow>
+    
+               
+              
+            </TableBody>
+         
+        <StyleModal
+          aria-labelledby="unstyled-modal-title"
+          aria-describedby="unstyled-modal-description"
+          open={open}
+          onClose={handleClose}
+          BackdropComponent={Backdrop}
+        >
+          <Box sx={style}>
+            <button onClick={()=>onDelete(id)} >REJECT</button>
+            <button onClick={()=>ontoggle(id)}>IN-PROGRESS</button>
+            <button onClick={()=>onstalled(id)}>Setiled</button>
+          </Box>
+        </StyleModal>
+          </>
+        )
+}
 
 export default function AdminPage() {
-    
+    const [filter,setFilter]=useState([]);
     const {details}=useSelector(
-        (state) => state.employ,
+        (state) => state.admin,
         shallowEqual
         );
         const dispatch = useDispatch();
-       
+       console.log("filter", filter)
     
     const getData = () => {
         return axios.get("http://localhost:3000/data")
         .then((response) =>{
-            
-            dispatch(getDetails(response.data))
-           
+            setFilter(response)
+            dispatch(getDetail(response.data))
+          
             
         })
         .catch((error) =>{
@@ -97,40 +140,59 @@ export default function AdminPage() {
         })
     }
     
+   
+
+
     useEffect(() => {
         getData();
     },[])
     console.log(details)
-
-    const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-
-    
+    const handleDelete = (id) => {
+      const action = removeDetails(id);
+      dispatch(action)
+  }
+  const handleToggle = (id) => {
+      const action = toggleDetails(id);
+      console.log(action)
+  dispatch(action);
+  }
+ const handleSattled = (id) => {
+   const action = setledDetails(id)
+   dispatch(action)
+ }
+  const filterDate = ()=>{
+    // const action = filtereDateWise(details)
+    // dispatch(action)
+    // console.log(action,"action")
+    const sortcars = details.sort((a, b) => Date.parse(new Date(a.initialRegistration.split("/").reverse().join("-"))) - Date.parse(new Date(b.initialRegistration.split("/").reverse().join("-"))))
+    dispatch(sortcars)
+  }
     return (
         <>
-      <TableContainer>
+
+      {/* <TableContainer>
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead>
             <TableRow>
               <StyledTableCell>Name</StyledTableCell>
               <StyledTableCell align="right">Date of Claim/reimbursement</StyledTableCell>
-              <StyledTableCell align="right">Purpose of Claim&nbsp;(g)</StyledTableCell>
-              <StyledTableCell align="right">Amount To be Claimed&nbsp;(g)</StyledTableCell>
-              <StyledTableCell align="right">Status&nbsp;(g)</StyledTableCell>
+              <StyledTableCell align="right">Purpose of Claim</StyledTableCell>
+              <StyledTableCell align="right">Amount To be Claimed</StyledTableCell>
+              <StyledTableCell align="right">Status</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
           {
               details?.map((item)=> {
-                  return <StyledTableRow key={item.id} onClick={handleOpen}>
+                  return <StyledTableRow key={item.id} >
                   <StyledTableCell component="th" scope="row">
                   {item.name}
                   </StyledTableCell>
                   <StyledTableCell align="right">{item.date}</StyledTableCell>
                   <StyledTableCell align="right">{item.purpose}</StyledTableCell>
                   <StyledTableCell align="right">{item.amount}</StyledTableCell>
-                  <StyledTableCell align="right">{item.status}</StyledTableCell>
+                  <StyledTableCell align="right"onClick={handleToggle}>{`${item.status}`}</StyledTableCell>
+                  
                 </StyledTableRow>
   
               
@@ -148,11 +210,36 @@ export default function AdminPage() {
         BackdropComponent={Backdrop}
       >
         <Box sx={style}>
-          <button >REJECT</button>
-          <button>IN-PROGRESS</button>
+          <button onClick={handleDelete} >REJECT</button>
+          <button >IN-PROGRESS</button>
           <button>Setiled</button>
         </Box>
-      </StyleModal>
+      </StyleModal> */}
+       <TableContainer>
+          <Table sx={{ minWidth: 700 }} aria-label="customized table">
+            <TableHead>
+              <TableRow>
+                <StyledTableCell>Name</StyledTableCell>
+                <StyledTableCell align="right"onClick={filterDate}>Date of Claim/reimbursement</StyledTableCell>
+                <StyledTableCell align="right">Purpose of Claim</StyledTableCell>
+                <StyledTableCell align="right">Amount To be Claimed</StyledTableCell>
+                <StyledTableCell align="right">Status</StyledTableCell>
+              </TableRow>
+            </TableHead>
+
+          {
+            details?.map((item)=>(
+              <Tableer
+              key={item.id}
+              {...item}
+              ontoggle={handleToggle}
+              onDelete={handleDelete}
+              onstalled={handleSattled}
+              />
+            ))
+          }
+           </Table>
+        </TableContainer>
         </>
     );
   }

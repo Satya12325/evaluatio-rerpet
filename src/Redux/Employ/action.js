@@ -21,3 +21,9 @@ export const getDetails = (details)=>{
     };
 };
 
+export const removeDetails = (id) => ({
+    type: "REMOVE_DETAILS",
+    payload: {
+        id: id
+    }
+});

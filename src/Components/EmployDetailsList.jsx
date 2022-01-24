@@ -73,9 +73,9 @@ export default function EmployDetailsList() {
             <TableRow>
               <StyledTableCell>Name</StyledTableCell>
               <StyledTableCell align="right">Date of Claim/reimbursement</StyledTableCell>
-              <StyledTableCell align="right">Purpose of Claim&nbsp;(g)</StyledTableCell>
-              <StyledTableCell align="right">Amount To be Claimed&nbsp;(g)</StyledTableCell>
-              <StyledTableCell align="right">Status&nbsp;(g)</StyledTableCell>
+              <StyledTableCell align="right">Purpose of Claim</StyledTableCell>
+              <StyledTableCell align="right">Amount To be Claimed</StyledTableCell>
+              <StyledTableCell align="right">Status</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
